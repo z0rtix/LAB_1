@@ -9,6 +9,7 @@
 #include <math.h>
 #include <ctype.h>
 
+
 static void clear_input(void) {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
@@ -82,7 +83,9 @@ void add_element(DynamicArray *arr) {
             printf("Ошибка ввода\n");
             return;
         }
-        push(arr, &val);
+        if (push(arr, &val) != 0) {
+            printf("Ошибка: не удалось добавить элемент\n");
+        }
     }
     else if (arr->type == get_string_type()) {
         char buffer[256];
@@ -94,7 +97,10 @@ void add_element(DynamicArray *arr) {
         buffer[strcspn(buffer, "\n")] = '\0';
         if (strlen(buffer) > 0) {
             char *new_str = strdup(buffer);
-            push(arr, &new_str);
+            if (push(arr, &new_str) != 0) {
+                printf("Ошибка: не удалось добавить элемент\n");
+                free(new_str);
+            }
         }
     }
     else if (arr->type == get_double_type()) {
@@ -103,7 +109,9 @@ void add_element(DynamicArray *arr) {
             printf("Ошибка ввода\n");
             return;
         }
-        push(arr, &val);
+        if (push(arr, &val) != 0) {
+            printf("Ошибка: не удалось добавить элемент\n");
+        }
     }
 }
 
@@ -348,7 +356,9 @@ void interactive_mode(void) {
                             printf("❌ Ошибка ввода\n");
                             break;
                         }
-                        set(arr, index, &val);
+                        if (set(arr, index, &val) != 0) {
+                            printf("❌ Не удалось изменить элемент\n");
+                        }
                     }
                     else if (arr->type == get_string_type()) {
                         char buffer[256];
@@ -360,7 +370,10 @@ void interactive_mode(void) {
                         buffer[strcspn(buffer, "\n")] = '\0';
                         if (strlen(buffer) > 0) {
                             char *val = strdup(buffer);
-                            set(arr, index, &val);
+                            if (set(arr, index, &val) != 0) {
+                                printf("❌ Не удалось изменить элемент\n");
+                                free(val);
+                            }
                         } else {
                             printf("❌ Пустая строка, элемент не изменён\n");
                         }
@@ -371,7 +384,9 @@ void interactive_mode(void) {
                             printf("❌ Ошибка ввода\n");
                             break;
                         }
-                        set(arr, index, &val);
+                        if (set(arr, index, &val) != 0) {
+                            printf("❌ Не удалось изменить элемент\n");
+                        }
                     }
                     break;
                 }
