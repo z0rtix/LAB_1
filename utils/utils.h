@@ -1,6 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+
 int int_compare(const void *a, const void *b);
 void int_print(const void *x);
 void *int_copy(const void *x);
@@ -35,9 +36,5 @@ void array_free(void *x);
 void array_print(const void *x);
 int array_compare(const void *a, const void *b);
 
-// extern const TypeInfo INT_TYPE;
-// extern const TypeInfo DOUBLE_TYPE;
-// extern const TypeInfo STRING_TYPE;
-// extern const TypeInfo ARRAY_TYPE;
 
 #endif

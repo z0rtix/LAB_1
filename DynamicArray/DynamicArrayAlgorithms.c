@@ -28,19 +28,29 @@ void sort(DynamicArray* array) {
 DynamicArray *copy(const DynamicArray *array) {
     if (array == NULL) return NULL;
     DynamicArray *copy_of_array = create(array->type);
-    copy_of_array->is_view = 0;
     if (copy_of_array == NULL) return NULL;
+
+    if (copy_of_array->is_view == 1) {
+        copy_of_array->is_view = 0;
+    }
+
     reserve(copy_of_array, array->size);
     for (int i = 0; i < array->size; i++) {
         void *current_of_array = (char*)array->data + i * array->type->element_size;
         void *copy_of_current = array->type->element_copy(current_of_array);
+
         if (copy_of_current == NULL) {
             destroy(copy_of_array);
             return NULL;
         }
-        push(copy_of_array, copy_of_current);
+
+        if (push(copy_of_array, copy_of_current) != 0) {
+            free(copy_of_current);
+            destroy(copy_of_array);
+            return NULL;
+        }
+
         free(copy_of_current);
-        // array->type->element_free(copy_of_current);
     }
 
     return copy_of_array;
@@ -62,11 +72,15 @@ DynamicArray* where(const DynamicArray* array, int (*predicate)(const void*)) {
     if (array == NULL || predicate == NULL) return NULL;
 
     DynamicArray *result = create(array->type);
+    if (result == NULL) return NULL;
 
     for (int i = 0; i < array->size; i++) {
         void *element = (char*)array->data + i * array->type->element_size;
         if (predicate(element)) {
-            push(result, element);
+            if (push(result, element) != 0) {
+                destroy(result);
+                return NULL;
+            }
         }
     }
 
@@ -79,15 +93,22 @@ DynamicArray* concat(const DynamicArray* array1, const DynamicArray* array2) {
     if (array1 == NULL || array2 == NULL || array1->type != array2->type) return NULL;
 
     DynamicArray* concat_array = create(array1->type);
+    if (concat_array == NULL) return NULL;
 
     for (int i = 0; i < array1->size; i++) {
         void *element = (char*)array1->data + i * array1->type->element_size;
-        push(concat_array, element);
+        if (push(concat_array, element) != 0) {
+            destroy(concat_array);
+            return NULL;
+        }
     }
 
     for (int i = 0; i < array2->size; i++) {
         void *element = (char*)array2->data + i * array2->type->element_size;
-        push(concat_array, element);
+        if (push(concat_array, element) != 0) {
+            destroy(concat_array);
+            return NULL;
+        }
     }
 
     concat_array->is_view = 1;

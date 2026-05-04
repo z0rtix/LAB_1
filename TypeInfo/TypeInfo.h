@@ -1,6 +1,7 @@
 #ifndef TYPEINFO_H
 #define TYPEINFO_H
 
+
 typedef struct TypeInfo {
     int element_size;
     
@@ -10,11 +11,14 @@ typedef struct TypeInfo {
     void *(*element_copy)(const void*);
 } TypeInfo;
 
-TypeInfo* get_int_type(void);
-TypeInfo* get_double_type(void);
-TypeInfo* get_string_type(void);
-TypeInfo* get_array_type(void);
+
+const TypeInfo* get_int_type(void);
+const TypeInfo* get_double_type(void);
+const TypeInfo* get_string_type(void);
+const TypeInfo* get_array_type(void);
+
 
 void cleanup_types(void);
+
 
 #endif

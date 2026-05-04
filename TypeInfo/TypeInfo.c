@@ -4,14 +4,17 @@
 
 #include <stdlib.h>
 
+
 static TypeInfo *int_type = NULL;
 static TypeInfo *double_type = NULL;
 static TypeInfo *string_type = NULL;
 static TypeInfo *array_type = NULL;
 
-TypeInfo *get_int_type(void) {
+
+const TypeInfo *get_int_type(void) {
     if (int_type == NULL) {
         int_type = malloc(sizeof(TypeInfo));
+        if (int_type == NULL) return NULL;
         *int_type = (TypeInfo){
             .element_size = sizeof(int),
             .element_free = NULL,
@@ -23,7 +26,7 @@ TypeInfo *get_int_type(void) {
     return int_type;
 }
 
-TypeInfo *get_double_type(void) {
+const TypeInfo *get_double_type(void) {
     if (double_type == NULL) {
         double_type = malloc(sizeof(TypeInfo));
         *double_type = (TypeInfo){
@@ -37,7 +40,7 @@ TypeInfo *get_double_type(void) {
     return double_type;
 }
 
-TypeInfo *get_string_type(void) {
+const TypeInfo *get_string_type(void) {
     if (string_type == NULL) {
         string_type = malloc(sizeof(TypeInfo));
         *string_type = (TypeInfo){
@@ -51,7 +54,7 @@ TypeInfo *get_string_type(void) {
     return string_type;
 }
 
-TypeInfo *get_array_type(void) {
+const TypeInfo *get_array_type(void) {
     if (array_type == NULL) {
         array_type = malloc(sizeof(TypeInfo));
         *array_type = (TypeInfo){
@@ -64,6 +67,7 @@ TypeInfo *get_array_type(void) {
     }
     return array_type;
 }
+
 
 void cleanup_types(void) {
     free(int_type);

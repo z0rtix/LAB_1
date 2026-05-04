@@ -5,7 +5,9 @@
 #include <string.h>
 #include <stdio.h>
 
+
 const int DEFAULT_CAPACITY = 4;
+
 
 DynamicArray *create(const TypeInfo *type) {
     DynamicArray *array = malloc(sizeof(DynamicArray));
@@ -39,10 +41,10 @@ void destroy(DynamicArray *array) {
     free(array);
 }
 
-void clear(DynamicArray *array) {
-    if (array == NULL || array->is_view) return;
+int clear(DynamicArray *array) {
+    if (array == NULL || array->is_view) return -1;
     void *new_data = malloc(array->type->element_size * DEFAULT_CAPACITY);
-    if (new_data == NULL) return;
+    if (new_data == NULL) return -1;
 
     if (array->type->element_free != NULL) {
         for (int i = 0; i < array->size; i++) {
@@ -55,24 +57,29 @@ void clear(DynamicArray *array) {
     array->data = new_data;
     array->size = 0;
     array->capacity = DEFAULT_CAPACITY;
+    
+    return 0;
 }
 
-void push(DynamicArray *array, const void *element) {
-    if (array == NULL || element == NULL || array->is_view) return;
+int push(DynamicArray *array, const void *element) {
+    if (array == NULL || element == NULL || array->is_view) return -1;
 
     if (array->size >= array->capacity) {
         int new_capacity = array->capacity * 2;
         void *new_data = malloc(new_capacity * array->type->element_size);
         
-        if (new_data == NULL) return;
+        if (new_data == NULL) return -1;
         memcpy(new_data, array->data , array->size * array->type->element_size);
         free(array->data);
         array->data = new_data;
         array->capacity = new_capacity;
     }
+
     void *last_element = (char*)array->data + array->size * array->type->element_size;
     memcpy(last_element, element, array->type->element_size);
     array->size++;
+
+    return 0;
 }
 
 void pop(DynamicArray *array) {
@@ -107,8 +114,8 @@ void *get(const DynamicArray *array, int index) {
     return (char*)array->data + index * array->type->element_size;
 }
 
-void set(DynamicArray *array, int index, const void *element) {
-    if (array == NULL || index < 0 || index >= array->size || element == NULL || array->is_view) return;
+int set(DynamicArray *array, int index, const void *element) {
+    if (array == NULL || index < 0 || index >= array->size || element == NULL || array->is_view) return -1;
 
     void *element_of_index = (char*)array->data + index * array->type->element_size;
     if (array->type->element_free != NULL) {
@@ -116,6 +123,8 @@ void set(DynamicArray *array, int index, const void *element) {
     }
 
     memcpy(element_of_index, element, array->type->element_size);
+
+    return 0;
 }
 
 int get_size(const DynamicArray *array) {
@@ -138,6 +147,7 @@ void reserve(DynamicArray *array, int new_capacity) {
 
     void *new_data = realloc(array->data, new_capacity * array->type->element_size);
     if (new_data == NULL) return;
+
     array->data = new_data;
     array->capacity = new_capacity;
 }
@@ -147,6 +157,7 @@ void shrink_to_fit(DynamicArray *array) {
 
     void *new_data = realloc(array->data, array->size * array->type->element_size);
     if (new_data == NULL) return;
+
     array->data = new_data;
     array->capacity = array->size;
 }
@@ -158,12 +169,15 @@ void print_array(const DynamicArray *array) {
     }
 
     printf("[");
+
     for (int i = 0; i < array->size; i++) {
         void *element = (char*)array->data + i * array->type->element_size;
         array->type->element_print(element);
+
         if (i < array->size - 1) {
             printf(", ");
         }
     }
+
     printf("]\n");
 }

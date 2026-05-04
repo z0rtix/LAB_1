@@ -7,6 +7,7 @@
 #include <ctype.h>
 #include <math.h>
 
+
 // for int
 int int_compare(const void *a, const void *b) {
     int va = *(const int*)a;
@@ -49,14 +50,6 @@ int int_gt_5(const void *x) {
     return *(const int*)x > 5;
 }
 
-// const TypeInfo INT_TYPE = {
-//     .element_size = sizeof(int),
-//     .element_free = NULL,
-//     .element_compare = int_compare,
-//     .element_print = int_print,
-//     .element_copy = int_copy
-// };
-
 
 // for double
 int double_compare(const void *a, const void *b) {
@@ -96,14 +89,6 @@ int double_gt_1(const void *x) {
     return *(const double*)x > 1.0;
 }
 
-// const TypeInfo DOUBLE_TYPE = {
-//     .element_size = sizeof(double),
-//     .element_free = NULL,
-//     .element_compare = double_compare,
-//     .element_print = double_print,
-//     .element_copy = double_copy
-// };
-
 
 // for str
 int string_compare(const void *a, const void *b) {
@@ -133,7 +118,7 @@ void string_map_upper(void *x) {
     if (new_str) {
         strcpy(new_str, old);
         for (int i = 0; new_str[i]; i++) {
-            new_str[i] = toupper(new_str[i]);
+            new_str[i] = (char)toupper((unsigned char)new_str[i]);
         }
         *s = new_str;
         free(old);
@@ -144,6 +129,7 @@ void string_map_exclaim(void *x) {
     char **s = (char**)x;
     char *old = *s;
     char *new_str = malloc(strlen(old) + 4);
+    if (!new_str) return;
 
     if (new_str) {
         strcpy(new_str, old);
@@ -158,6 +144,7 @@ void string_map_reverse(void *x) {
     char *old = *s;
     int len = strlen(old);
     char *new_str = malloc(len + 1);
+    if (!new_str) return;
 
     if (new_str) {
         for (int i = 0; i < len; i++) {
@@ -183,14 +170,6 @@ int string_contains_e(const void *x) {
     return strchr(s, 'e') != NULL || strchr(s, 'E') != NULL;
 }
 
-// const TypeInfo STRING_TYPE = {
-//     .element_size = sizeof(char*),
-//     .element_free = string_free,
-//     .element_compare = string_compare,
-//     .element_print = string_print,
-//     .element_copy = string_copy
-// };
-
 
 // for array of arrays
 void array_free(void *x) {
@@ -212,10 +191,3 @@ int array_compare(const void *a, const void *b) {
     }
     return 0;
 }
-
-// const TypeInfo ARRAY_TYPE = {
-//     .element_size = sizeof(DynamicArray*),
-//     .element_free = array_free,
-//     .element_compare = array_compare,
-//     .element_print = array_print
-// };
